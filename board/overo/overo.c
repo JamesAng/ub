@@ -61,6 +61,69 @@ int board_init(void)
 }
 
 /*
+ * Routine: get_sdio2_config
+ * Description: Return information about the wifi module connection
+ *              Returns 0 if the module connects though a level translator
+ *              Returns 1 if the module connects directly
+ */
+int get_sdio2_config(void) {
+	unsigned int sdio_direct;
+
+	if (!omap_request_gpio(130) && !omap_request_gpio(139)){
+
+		omap_set_gpio_direction(130, 0);
+		omap_set_gpio_direction(139, 1);
+
+		sdio_direct = 1;
+		omap_set_gpio_dataout(130, 0);
+		if (omap_get_gpio_datain(139) == 0) {
+			omap_set_gpio_dataout(130, 1);
+			if (omap_get_gpio_datain(139) == 1)
+				sdio_direct = 0;
+		}
+
+		omap_free_gpio(130);
+		omap_free_gpio(139);
+	} else printf("Error: unable to acquire sdio2 clk GPIOs\n");
+
+	return sdio_direct;
+}
+
+/*
+ * Routine: get_board_revision
+ * Description: Returns the board revision
+ */
+int get_board_revision(void) {
+	unsigned int revision;
+
+	if (!omap_request_gpio(126) && !omap_request_gpio(127) &&
+	    !omap_request_gpio(128) && !omap_request_gpio(129)){
+
+		omap_set_gpio_direction(126, 1);
+		omap_set_gpio_direction(127, 1);
+		omap_set_gpio_direction(128, 1);
+		omap_set_gpio_direction(129, 1);
+
+		revision = 0;
+		if (omap_get_gpio_datain(126) == 0)
+			revision += 1;
+		if (omap_get_gpio_datain(127) == 0)
+			revision += 2;
+		if (omap_get_gpio_datain(128) == 0)
+			revision += 4;
+		if (omap_get_gpio_datain(129) == 0)
+			revision += 8;
+
+		omap_free_gpio(126);
+		omap_free_gpio(127);
+		omap_free_gpio(128);
+		omap_free_gpio(129);
+	} else printf("Error: unable to acquire board revision GPIOs\n");
+
+	return revision;
+}
+
+/*
  * Routine: misc_init_r
  * Description: Configure board specific parts
  */
@@ -73,6 +136,22 @@ int misc_init_r(void)
 	setup_net_chip();
 #endif
 
+	switch (get_board_revision()) {
+		case 0:
+		case 1:
+			if (get_sdio2_config()) {
+				printf("SDIO2 is direct connected\n");
+				MUX_OVERO_SDIO2_DIRECT();
+			} else {
+				printf("SDIO2 is connected through transceiver\n");
+				MUX_OVERO_SDIO2_TRANSCEIVER();
+			}
+			break;
+		default:
+			printf("Error: unsupported revision\n");
+	}
+
+	printf("Board revision: %d\n", get_board_revision());
 	dieid_num_r();
 
 	return 0;
