@@ -129,21 +129,15 @@ int get_board_revision(void) {
  */
 int misc_init_r(void)
 {
-	twl4030_power_init();
-	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
-
-#if defined(CONFIG_CMD_NET)
-	setup_net_chip();
-#endif
-
+	printf("Board revision: ");
 	switch (get_board_revision()) {
 		case 0:
 		case 1:
 			if (get_sdio2_config()) {
-				printf("SDIO2 is direct connected\n");
+				printf(" 1\nSDIO2 is direct connected\n");
 				MUX_OVERO_SDIO2_DIRECT();
 			} else {
-				printf("SDIO2 is connected through transceiver\n");
+				printf(" 0\nSDIO2 is connected through transceiver\n");
 				MUX_OVERO_SDIO2_TRANSCEIVER();
 			}
 			break;
@@ -151,7 +145,13 @@ int misc_init_r(void)
 			printf("Error: unsupported revision\n");
 	}
 
-	printf("Board revision: %d\n", get_board_revision());
+	twl4030_power_init();
+	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
+
+#if defined(CONFIG_CMD_NET)
+	setup_net_chip();
+#endif
+
 	dieid_num_r();
 
 	return 0;
