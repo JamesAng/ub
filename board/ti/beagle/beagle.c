@@ -92,25 +92,6 @@ void beagle_identify(void)
 	omap_free_gpio(171);
 	omap_free_gpio(172);
 	omap_free_gpio(173);
-
-	printf("Board revision ");
-
-	switch (beagle_revision) {
-	case REVISION_AXBX:
-		printf("Ax/Bx\n");
-		break;
-	case REVISION_CX:
-		printf("C1/C2/C3\n");
-		break;
-	case REVISION_C4:
-		printf("C4\n");
-		break;
-	case REVISION_D:
-		printf("D\n");
-		break;
-	default:
-		printf("unknown 0x%02x\n", beagle_revision);
-	}
 }
 
 /*
@@ -122,8 +103,30 @@ int misc_init_r(void)
 	struct gpio *gpio5_base = (struct gpio *)OMAP34XX_GPIO5_BASE;
 	struct gpio *gpio6_base = (struct gpio *)OMAP34XX_GPIO6_BASE;
 
+	beagle_identify();
+
 	twl4030_power_init();
 	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
+
+	printf("Board revision ");
+	switch (beagle_revision) {
+	case REVISION_AXBX:
+		printf("Ax/Bx\n");
+		break;
+	case REVISION_CX:
+		printf("C1/C2/C3\n");
+		MUX_BEAGLE_C();
+		break;
+	case REVISION_C4:
+		printf("C4\n");
+		MUX_BEAGLE_C();
+		break;
+	case REVISION_D:
+		printf("D\n");
+		break;
+	default:
+		printf("unknown 0x%02x\n", beagle_revision);
+	}
 
 	/* Configure GPIOs to output */
 	writel(~(GPIO23 | GPIO10 | GPIO8 | GPIO2 | GPIO1), &gpio6_base->oe);
@@ -135,11 +138,6 @@ int misc_init_r(void)
 		&gpio6_base->setdataout);
 	writel(GPIO31 | GPIO30 | GPIO29 | GPIO28 | GPIO22 | GPIO21 |
 		GPIO15 | GPIO14 | GPIO13 | GPIO12, &gpio5_base->setdataout);
-
-	beagle_identify();
-	if (beagle_revision != REVISION_AXBX) {
-		MUX_BEAGLE_C();
-	}
 
 	dieid_num_r();
 
