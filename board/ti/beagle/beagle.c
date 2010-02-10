@@ -120,6 +120,11 @@ int misc_init_r(void)
 	case REVISION_C4:
 		printf("C4\n");
 		MUX_BEAGLE_C();
+		/* Set VAUX2 to 1.8V for EHCI PHY */
+		twl4030_pmrecv_vsel_cfg(TWL4030_PM_RECEIVER_VAUX2_DEDICATED,
+					TWL4030_PM_RECEIVER_VAUX2_VSEL_18,
+					TWL4030_PM_RECEIVER_VAUX2_DEV_GRP,
+					TWL4030_PM_RECEIVER_DEV_GRP_P1);
 		break;
 	case REVISION_D:
 		printf("D\n");
