@@ -43,7 +43,9 @@ static struct {
 	unsigned int device_vendor;
 	unsigned char revision;
 	unsigned char content;
-	unsigned char data[6];
+	unsigned char fab_revision[8];
+	unsigned char env_var[16];
+	unsigned char env_setting[64];
 } expansion_config;
 
 #define TWL4030_I2C_BUS			0
@@ -209,36 +211,36 @@ int misc_init_r(void)
 	switch (get_expansion_id()) {
 		case GUMSTIX_SUMMIT:
 			printf("Recognized Summit expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			setenv("defaultdisplay", "dvi");
 			break;
 		case GUMSTIX_TOBI:
 			printf("Recognized Tobi expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			setenv("defaultdisplay", "dvi");
 			break;
 		case GUMSTIX_TOBI_DUO:
 			printf("Recognized Tobi Duo expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			break;
 		case GUMSTIX_PALO35:
 			printf("Recognized Palo 35 expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			setenv("defaultdisplay", "lcd35");
 			break;
 		case GUMSTIX_PALO43:
 			printf("Recognized Palo 43 expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			setenv("defaultdisplay", "lcd43");
 			break;
 		case GUMSTIX_CHESTNUT43:
 			printf("Recognized Chestnut 43 expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			setenv("defaultdisplay", "lcd43");
 			break;
 		case GUMSTIX_PINTO:
 			printf("Recognized Pinto expansion board (rev %d %s)\n",
-				expansion_config.revision, expansion_config.data);
+				expansion_config.revision, expansion_config.fab_revision);
 			break;
 		case GUMSTIX_NO_EEPROM:
 			printf("No EEPROM on expansion board\n");
@@ -246,6 +248,9 @@ int misc_init_r(void)
 		case GUMSTIX_UNKNOWN:
 			printf("Unrecognized expansion board\n");
 	}
+
+	if (expansion_config.content == 1)
+		setenv(expansion_config.env_var, expansion_config.env_setting);
 
 	i2c_set_bus_num(TWL4030_I2C_BUS);
 	twl4030_power_init();
