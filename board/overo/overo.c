@@ -63,8 +63,7 @@ static struct {
 #define GUMSTIX_CHESTNUT43		0x06000200
 #define GUMSTIX_PINTO			0x07000200
 
-#define GUMSTIX_NO_EEPROM		0xfffffffe
-#define GUMSTIX_UNKNOWN			0xffffffff
+#define GUMSTIX_NO_EEPROM		0xffffffff
 
 #if defined(CONFIG_CMD_NET)
 static void setup_net_chip(void);
@@ -174,10 +173,7 @@ unsigned int get_expansion_id(void)
 	i2c_read(EXPANSION_EEPROM_I2C_ADDRESS, 0, 1, (u8 *)&expansion_config,
 		 sizeof(expansion_config));
 
-	if ( (expansion_config.device_vendor & 0xffff) != GUMSTIX_VENDORID )
-		return GUMSTIX_UNKNOWN;
-	else
-		return expansion_config.device_vendor;
+	return expansion_config.device_vendor;
 }
 
 
@@ -245,7 +241,7 @@ int misc_init_r(void)
 		case GUMSTIX_NO_EEPROM:
 			printf("No EEPROM on expansion board\n");
 			break;
-		case GUMSTIX_UNKNOWN:
+		default:
 			printf("Unrecognized expansion board\n");
 	}
 
