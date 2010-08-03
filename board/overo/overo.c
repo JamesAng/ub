@@ -125,24 +125,24 @@ int get_sdio2_config(void) {
 int get_board_revision(void) {
 	int revision;
 
-	if (!omap_request_gpio(127) && !omap_request_gpio(128) &&
-	    !omap_request_gpio(129)){
+	if (!omap_request_gpio(112) && !omap_request_gpio(113) &&
+	    !omap_request_gpio(115)){
 
-		omap_set_gpio_direction(127, 1);
-		omap_set_gpio_direction(128, 1);
-		omap_set_gpio_direction(129, 1);
+		omap_set_gpio_direction(112, 1);
+		omap_set_gpio_direction(113, 1);
+		omap_set_gpio_direction(115, 1);
 
 		revision = 0;
-		if (omap_get_gpio_datain(127) == 0)
+		if (omap_get_gpio_datain(112) == 1)
 			revision += 1;
-		if (omap_get_gpio_datain(128) == 0)
+		if (omap_get_gpio_datain(113) == 1)
 			revision += 2;
-		if (omap_get_gpio_datain(129) == 0)
+		if (omap_get_gpio_datain(115) == 1)
 			revision += 4;
 
-		omap_free_gpio(127);
-		omap_free_gpio(128);
-		omap_free_gpio(129);
+		omap_free_gpio(112);
+		omap_free_gpio(113);
+		omap_free_gpio(115);
 	} else {
 		printf("Error: unable to acquire board revision GPIOs\n");
 		revision=-1;
@@ -182,22 +182,26 @@ int misc_init_r(void)
 	printf("Board revision: ");
 	switch (get_board_revision()) {
 		case 0:
+			printf(" 0\n");
+			break;
 		case 1:
-			switch (get_sdio2_config()) {
-				case 0:
-					printf(" 0\n");
-					MUX_OVERO_SDIO2_TRANSCEIVER();
-					break;
-				case 1:
-					printf(" 1\n");
-					MUX_OVERO_SDIO2_DIRECT();
-					break;
-				default:
-					printf(" unknown\n");
-			}
+			printf(" 1\n");
 			break;
 		default:
-			printf(" unsupported\n");
+			printf(" unsupported: %d\n", get_board_revision());
+	}
+
+	switch (get_sdio2_config()) {
+		case 0:
+			printf("SDIO2 uses transceiver\n");
+			MUX_OVERO_SDIO2_TRANSCEIVER();
+			break;
+		case 1:
+			printf("SDIO2 uses direct connection\n");
+			MUX_OVERO_SDIO2_DIRECT();
+			break;
+		default:
+			MUX_OVERO_SDIO2_TRANSCEIVER();
 	}
 
 	switch (get_expansion_id()) {
