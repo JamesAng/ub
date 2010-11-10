@@ -53,8 +53,12 @@
 	(void) (&_min1 == &_min2);		\
 	_min1 < _min2 ? _min1 : _min2; })
 
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 struct envdev_s {
-	char devname[16];		/* Device name */
+	char devname[PATH_MAX];		/* Device name */
 	ulong devoff;			/* Device offset */
 	ulong env_size;			/* environment size */
 	ulong erase_size;		/* device erase size */
