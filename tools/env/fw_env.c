@@ -60,6 +60,7 @@ struct envdev_s {
 	ulong erase_size;		/* device erase size */
 	ulong env_sectors;		/* number of environment sectors */
 	uint8_t mtd_type;		/* type of the MTD device */
+	mode_t st_mode;			/* protection / file type */
 };
 
 static struct envdev_s envdevices[2] =
@@ -78,6 +79,7 @@ static int dev_current;
 #define DEVESIZE(i)   envdevices[(i)].erase_size
 #define ENVSECTORS(i) envdevices[(i)].env_sectors
 #define DEVTYPE(i)    envdevices[(i)].mtd_type
+#define STMODE(i)     envdevices[(i)].st_mode
 
 #define CONFIG_ENV_SIZE ENVSIZE(dev_current)
 
@@ -633,8 +635,12 @@ int fw_parse_script(char *fname)
  * > 0	- block is bad
  * < 0	- failed to test
  */
-static int flash_bad_block (int fd, uint8_t mtd_type, loff_t *blockstart)
+static int flash_bad_block (int fd, uint8_t mtd_type, loff_t *blockstart,
+			    int is_mtd)
 {
+	if (!is_mtd)
+		return 0;
+
 	if (mtd_type == MTD_NANDFLASH) {
 		int badblock = ioctl (fd, MEMGETBADBLOCK, blockstart);
 
@@ -661,7 +667,7 @@ static int flash_bad_block (int fd, uint8_t mtd_type, loff_t *blockstart)
  * the DEVOFFSET (dev) block. On NOR the loop is only run once.
  */
 static int flash_read_buf (int dev, int fd, void *buf, size_t count,
-			   off_t offset, uint8_t mtd_type)
+			   off_t offset, uint8_t mtd_type, int is_mtd)
 {
 	size_t blocklen;	/* erase / write length - one block on NAND,
 				   0 on NOR */
@@ -683,7 +689,7 @@ static int flash_read_buf (int dev, int fd, void *buf, size_t count,
 	/* Offset inside a block */
 	block_seek = offset - blockstart;
 
-	if (mtd_type == MTD_NANDFLASH) {
+	if (!is_mtd || mtd_type == MTD_NANDFLASH) {
 		/*
 		 * NAND: calculate which blocks we are reading. We have
 		 * to read one block at a time to skip bad blocks.
@@ -707,7 +713,7 @@ static int flash_read_buf (int dev, int fd, void *buf, size_t count,
 
 	/* This only runs once on NOR flash */
 	while (processed < count) {
-		rc = flash_bad_block (fd, mtd_type, &blockstart);
+		rc = flash_bad_block (fd, mtd_type, &blockstart, is_mtd);
 		if (rc < 0)		/* block test failed */
 			return -1;
 
@@ -754,7 +760,7 @@ static int flash_read_buf (int dev, int fd, void *buf, size_t count,
  * the whole data at once.
  */
 static int flash_write_buf (int dev, int fd, void *buf, size_t count,
-			    off_t offset, uint8_t mtd_type)
+			    off_t offset, uint8_t mtd_type, int is_mtd)
 {
 	void *data;
 	struct erase_info_user erase;
@@ -812,7 +818,7 @@ static int flash_write_buf (int dev, int fd, void *buf, size_t count,
 		}
 
 		rc = flash_read_buf (dev, fd, data, write_total, erase_offset,
-				     mtd_type);
+				     mtd_type, is_mtd);
 		if (write_total != rc)
 			return -1;
 
@@ -826,7 +832,7 @@ static int flash_write_buf (int dev, int fd, void *buf, size_t count,
 		data = buf;
 	}
 
-	if (mtd_type == MTD_NANDFLASH) {
+	if (!is_mtd || mtd_type == MTD_NANDFLASH) {
 		/*
 		 * NAND: calculate which blocks we are writing. We have
 		 * to write one block at a time to skip bad blocks.
@@ -840,7 +846,7 @@ static int flash_write_buf (int dev, int fd, void *buf, size_t count,
 
 	/* This only runs once on NOR flash */
 	while (processed < write_total) {
-		rc = flash_bad_block (fd, mtd_type, &blockstart);
+		rc = flash_bad_block (fd, mtd_type, &blockstart, is_mtd);
 		if (rc < 0)		/* block test failed */
 			return rc;
 
@@ -854,14 +860,16 @@ static int flash_write_buf (int dev, int fd, void *buf, size_t count,
 			continue;
 		}
 
-		erase.start = blockstart;
-		ioctl (fd, MEMUNLOCK, &erase);
+		if (is_mtd) {
+			erase.start = blockstart;
+			ioctl (fd, MEMUNLOCK, &erase);
 
-		if (ioctl (fd, MEMERASE, &erase) != 0) {
-			fprintf (stderr, "MTD erase error on %s: %s\n",
-				 DEVNAME (dev),
-				 strerror (errno));
-			return -1;
+			if (ioctl (fd, MEMERASE, &erase) != 0) {
+				fprintf (stderr, "MTD erase error on %s: %s\n",
+					 DEVNAME (dev),
+					 strerror (errno));
+				return -1;
+			}
 		}
 
 		if (lseek (fd, blockstart, SEEK_SET) == -1) {
@@ -880,7 +888,9 @@ static int flash_write_buf (int dev, int fd, void *buf, size_t count,
 			return -1;
 		}
 
-		ioctl (fd, MEMLOCK, &erase);
+		if (is_mtd) {
+			ioctl (fd, MEMLOCK, &erase);
+		}
 
 		processed  += blocklen;
 		block_seek = 0;
@@ -919,7 +929,8 @@ static int flash_flag_obsolete (int dev, int fd, off_t offset)
 	return rc;
 }
 
-static int flash_write (int fd_current, int fd_target, int dev_target)
+static int flash_write (int fd_current, int fd_target, int dev_target,
+			int is_mtd)
 {
 	int rc;
 
@@ -944,7 +955,7 @@ static int flash_write (int fd_current, int fd_target, int dev_target)
 #endif
 	rc = flash_write_buf (dev_target, fd_target, environment.image,
 			      CONFIG_ENV_SIZE, DEVOFFSET (dev_target),
-			      DEVTYPE(dev_target));
+			      DEVTYPE(dev_target), is_mtd);
 	if (rc < 0)
 		return rc;
 
@@ -962,26 +973,32 @@ static int flash_write (int fd_current, int fd_target, int dev_target)
 	return 0;
 }
 
-static int flash_read (int fd)
+static int flash_read (int fd, int is_mtd)
 {
 	struct mtd_info_user mtdinfo;
 	int rc;
 
-	rc = ioctl (fd, MEMGETINFO, &mtdinfo);
-	if (rc < 0) {
-		perror ("Cannot get MTD information");
-		return -1;
+	if (is_mtd) {
+		rc = ioctl (fd, MEMGETINFO, &mtdinfo);
+		if (rc < 0) {
+			perror ("Cannot get MTD information");
+			return -1;
+		}
+
+		if (mtdinfo.type != MTD_NORFLASH &&
+		    mtdinfo.type != MTD_NANDFLASH) {
+			fprintf (stderr,
+				 "Unsupported flash type %u\n",
+				 mtdinfo.type);
+			return -1;
 	}
 
-	if (mtdinfo.type != MTD_NORFLASH && mtdinfo.type != MTD_NANDFLASH) {
-		fprintf (stderr, "Unsupported flash type %u\n", mtdinfo.type);
-		return -1;
+		DEVTYPE(dev_current) = mtdinfo.type;
 	}
-
-	DEVTYPE(dev_current) = mtdinfo.type;
 
 	rc = flash_read_buf (dev_current, fd, environment.image, CONFIG_ENV_SIZE,
-			     DEVOFFSET (dev_current), mtdinfo.type);
+			     DEVOFFSET (dev_current), DEVTYPE(dev_current),
+			     is_mtd);
 
 	return (rc != CONFIG_ENV_SIZE) ? -1 : 0;
 }
@@ -989,6 +1006,7 @@ static int flash_read (int fd)
 static int flash_io (int mode)
 {
 	int fd_current, fd_target, rc, dev_target;
+	int is_mtd;
 
 	/* dev_current: fd_current, erase_current */
 	fd_current = open (DEVNAME (dev_current), mode);
@@ -998,6 +1016,16 @@ static int flash_io (int mode)
 			 DEVNAME (dev_current), strerror (errno));
 		return -1;
 	}
+
+	/* Check whether fd is a MTD device, otherwise assume regular file */
+	if (S_ISREG (STMODE (dev_current)))
+		is_mtd = 0;
+	else if (S_ISCHR (STMODE (dev_current)))
+		is_mtd = 1;
+	else
+		fprintf (stderr,
+			 "%s has unknown file type: %u\n",
+			 DEVNAME (dev_current), STMODE (dev_current));
 
 	if (mode == O_RDWR) {
 		if (HaveRedundEnv) {
@@ -1018,7 +1046,7 @@ static int flash_io (int mode)
 			fd_target = fd_current;
 		}
 
-		rc = flash_write (fd_current, fd_target, dev_target);
+		rc = flash_write (fd_current, fd_target, dev_target, is_mtd);
 
 		if (HaveRedundEnv) {
 			if (close (fd_target)) {
@@ -1030,7 +1058,7 @@ static int flash_io (int mode)
 			}
 		}
 	} else {
-		rc = flash_read (fd_current);
+		rc = flash_read (fd_current, is_mtd);
 	}
 
 exit:
@@ -1258,6 +1286,7 @@ static int parse_config ()
 			DEVNAME (0), strerror (errno));
 		return -1;
 	}
+	STMODE(0) = st.st_mode;
 
 	if (HaveRedundEnv && stat (DEVNAME (1), &st)) {
 		fprintf (stderr,
@@ -1265,6 +1294,7 @@ static int parse_config ()
 			DEVNAME (1), strerror (errno));
 		return -1;
 	}
+	STMODE(1) = st.st_mode;
 	return 0;
 }
 
