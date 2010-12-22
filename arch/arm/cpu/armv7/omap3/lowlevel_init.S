@@ -35,6 +35,36 @@
 _TEXT_BASE:
 	.word	CONFIG_SYS_TEXT_BASE	/* sdram load addr from config.mk */
 
+.global omap3_gp_romcode_call
+omap3_gp_romcode_call:
+	PUSH {r4-r12, lr} @ Save all registers from ROM code!
+	MOV r12, r0	@ Copy the Service ID in R12
+	MOV r0, r1	@ Copy parameter to R0
+	DSB
+	DMB
+	SMC #0		@ Use the SMI #1 to enter Monitor
+	POP {r4-r12, pc}
+
+/*
+ * Funtion for making PPA HAL API calls in secure devices
+ * Input:
+ *	R0 - Service ID
+ *	R1 - paramer list
+ */
+.global do_omap3_emu_romcode_call
+do_omap3_emu_romcode_call:
+	PUSH {r4-r12, lr} @ Save all registers from ROM code!
+	MOV r12, r0	@ Copy the Secure Service ID in R12
+	MOV r3, r1	@ Copy the pointer to va_list in R3
+	MOV r1, #0	@ Process ID - 0
+	MOV r2, #OMAP3_EMU_HAL_START_HAL_CRITICAL	@ Copy the pointer
+							@ to va_list in R3
+	MOV r6, #0xFF	@ Indicate new Task call
+	DSB
+	DMB
+	SMC #1		@ Use the SMI #1 to enter Monitor
+	POP {r4-r12, pc}
+
 #if !defined(CONFIG_SYS_NAND_BOOT) && !defined(CONFIG_SYS_NAND_BOOT)
 /**************************************************************************
  * cpy_clk_code: relocates clock code into SRAM where its safer to execute
