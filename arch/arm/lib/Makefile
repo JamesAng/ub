@@ -42,6 +42,7 @@ COBJS-y	+= cache.o
 ifndef CONFIG_SYS_NO_CP15_CACHE
 COBJS-y	+= cache-cp15.o
 endif
+COBJS-$(CONFIG_SYS_USE_PL310) += cache-pl310.o
 COBJS-y	+= interrupts.o
 COBJS-y	+= reset.o
 
