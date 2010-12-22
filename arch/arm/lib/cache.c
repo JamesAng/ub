@@ -25,7 +25,7 @@
 
 #include <common.h>
 
-void  flush_cache (unsigned long dummy1, unsigned long dummy2)
+void  __flush_cache(unsigned long dummy1, unsigned long dummy2)
 {
 #if defined(CONFIG_OMAP2420) || defined(CONFIG_ARM1136)
 	void arm1136_cache_flush(void);
@@ -38,10 +38,7 @@ void  flush_cache (unsigned long dummy1, unsigned long dummy2)
 	/* disable write buffer as well (page 2-22) */
 	asm("mcr p15, 0, %0, c7, c10, 4" : : "r" (0));
 #endif
-#ifdef CONFIG_OMAP34XX
-	void v7_flush_cache_all(void);
-
-	v7_flush_cache_all();
-#endif
 	return;
 }
+void  flush_cache(unsigned long dummy1, unsigned long dummy2)
+	__attribute__((weak, alias("__flush_cache")));
