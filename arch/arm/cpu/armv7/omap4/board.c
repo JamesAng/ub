@@ -31,7 +31,8 @@
 #include <asm/arch/cpu.h>
 #include <asm/arch/sys_proto.h>
 #include <asm/sizes.h>
-
+#include <asm/armv7.h>
+#include <asm/pl310.h>
 DECLARE_GLOBAL_DATA_PTR;
 
 /*
@@ -127,3 +128,25 @@ int arch_cpu_init(void)
 	set_muxconf_regs();
 	return 0;
 }
+
+/*
+ * Outer cache related functions
+ */
+#ifndef CONFIG_SYS_NO_DCACHE
+void v7_setup_outer_cache_ops(void)
+{
+#ifndef CONFIG_L2_OFF
+	v7_outer_cache.enable = omap4_enable_pl310;
+	v7_outer_cache.disable = omap4_disable_pl310;
+	v7_outer_cache.flush_all = pl310_clean_inval_all;
+	v7_outer_cache.flush_range = pl310_clean_inval_range;
+	v7_outer_cache.inval_range = pl310_inval_range;
+	/*
+	 * Do not setup v7_outer_cache.inval_all
+	 * Not needed in OMAP4 because ROM code invalidates entire L2$ at
+	 * bootup.
+	 */
+	v7_outer_cache.inval_all = NULL;
+#endif
+}
+#endif

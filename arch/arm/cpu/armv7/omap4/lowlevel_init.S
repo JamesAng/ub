@@ -29,6 +29,8 @@
 #include <asm/arch/omap4.h>
 
 .globl lowlevel_init
+.globl omap4_enable_pl310
+.globl omap4_disable_pl310
 lowlevel_init:
 	/*
 	 * Setup a temporary stack
@@ -45,3 +47,18 @@ lowlevel_init:
 	 */
 	bl	s_init
 	pop	{ip, pc}
+
+set_pl310_ctrl_reg:
+        PUSH	{r4-r11, lr}	@ save registers - ROM code may pollute
+				@ our registers
+        LDR	r12, =0x102	@ Set PL310 control register - value in R0
+        SMC	#0		@ call ROM Code API to set control register
+        POP	{r4-r11, pc}
+
+omap4_enable_pl310:
+	MOV	r0, #1
+	B	set_pl310_ctrl_reg
+
+omap4_disable_pl310:
+	MOV	r0, #0
+	B	set_pl310_ctrl_reg

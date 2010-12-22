@@ -100,6 +100,12 @@
 #define PRM_RSTCTRL		PRM_DEVICE_BASE
 #define PRM_RSTCTRL_RESET	0x01
 
+/* PL310 base */
+#define CONFIG_SYS_PL310_BASE	0x48242000
+
+/* PL310 associativity */
+#define OMAP44XX_PL310_ASSOCIATIVITY	16
+
 #ifndef __ASSEMBLY__
 
 struct s32ktimer {
