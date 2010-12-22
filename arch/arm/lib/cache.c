@@ -25,7 +25,7 @@
 
 #include <common.h>
 
-void  __flush_cache(unsigned long dummy1, unsigned long dummy2)
+void  __flush_cache(unsigned long start, unsigned long size)
 {
 #if defined(CONFIG_OMAP2420) || defined(CONFIG_ARM1136)
 	void arm1136_cache_flush(void);
@@ -42,3 +42,14 @@ void  __flush_cache(unsigned long dummy1, unsigned long dummy2)
 }
 void  flush_cache(unsigned long dummy1, unsigned long dummy2)
 	__attribute__((weak, alias("__flush_cache")));
+
+/*
+ * Default implementation:
+ * do a range flush for the entire range
+ */
+void	__flush_dcache_all(void)
+{
+	flush_cache(0, ~0);
+}
+void	flush_dcache_all(void)
+	__attribute__((weak, alias("__flush_dcache_all")));
