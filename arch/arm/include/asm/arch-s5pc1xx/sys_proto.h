@@ -26,7 +26,7 @@
 
 u32 get_device_type(void);
 void invalidate_dcache(u32);
-void l2_cache_disable(void);
-void l2_cache_enable(void);
+void ca8_l2_cache_disable(void);
+void ca8_l2_cache_enable(void);
 
 #endif

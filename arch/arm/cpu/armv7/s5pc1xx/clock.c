@@ -26,6 +26,8 @@
 #include <asm/io.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/clk.h>
+#include <asm/arch/sys_proto.h>
+#include <asm/armv7.h>
 
 #define CLK_M	0
 #define CLK_D	1
@@ -328,3 +330,13 @@ void s5p_clock_init(void)
 	get_uart_clk = s5pc1xx_get_uart_clk;
 	get_pwm_clk = s5pc1xx_get_pwm_clk;
 }
+
+#ifndef CONFIG_SYS_NO_DCACHE
+void v7_setup_outer_cache_ops(void)
+{
+#ifndef CONFIG_L2_OFF
+	v7_outer_cache.enable = ca8_l2_cache_enable;
+	v7_outer_cache.disable = ca8_l2_cache_disable;
+#endif
+}
+#endif
