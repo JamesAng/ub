@@ -125,8 +125,8 @@ const omap3_sysinfo sysinfo = {
 								 /* - MMC1_WP*/\
 	MUX_VAL(CP(GPMC_NCS4),		(IDIS | PTU | EN  | M0)) /*GPMC_nCS4*/\
 	MUX_VAL(CP(GPMC_NCS5),		(IDIS | PTU | EN  | M0)) /*GPMC_nCS5*/\
-	MUX_VAL(CP(GPMC_NCS6),		(IEN  | PTD | DIS | M0)) /*GPMC_nCS6*/\
-	MUX_VAL(CP(GPMC_NCS7),		(IEN  | PTU | EN  | M0)) /*GPMC_nCS7*/\
+	MUX_VAL(CP(GPMC_NCS6),		(IEN  | PTU | EN  | M4)) /*GPIO_57*/\
+	MUX_VAL(CP(GPMC_NCS7),		(IEN  | PTU | EN  | M4)) /*GPMC_58*/\
 	MUX_VAL(CP(GPMC_NBE1),		(IEN  | PTD | DIS | M0)) /*GPMC_nCS3*/\
 	MUX_VAL(CP(GPMC_CLK),		(IDIS | PTU | EN  | M0)) /*GPMC_CLK*/\
 	MUX_VAL(CP(GPMC_NADV_ALE),	(IDIS | PTD | DIS | M0)) /*GPMC_nADV_ALE*/\
