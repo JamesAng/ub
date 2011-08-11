@@ -268,7 +268,7 @@ const omap3_sysinfo sysinfo = {
 	MUX_VAL(CP(MCSPI2_SIMO),	(IEN  | PTU | DIS | M0)) /*MCSPI2_SIMO*/\
 	MUX_VAL(CP(MCSPI2_SOMI),	(IEN  | PTU | DIS | M0)) /*MCSPI2_SOMI*/\
 	MUX_VAL(CP(MCSPI2_CS0),		(IEN  | PTU | DIS | M0)) /*MCSPI2_CS0*/\
-	MUX_VAL(CP(MCSPI2_CS1),		(IEN  | PTU | DIS | M4)) /*GPIO_182 TS_IRQ*/\
+	MUX_VAL(CP(MCSPI2_CS1),		(IEN  | PTU | DIS | M0)) /*MCSPI2_CS1*/\
  /*Control and debug */\
 	MUX_VAL(CP(SYS_32K),		(IEN  | PTD | DIS | M0)) /*SYS_32K*/\
 	MUX_VAL(CP(SYS_CLKREQ),		(IEN  | PTD | DIS | M0)) /*SYS_CLKREQ*/\
