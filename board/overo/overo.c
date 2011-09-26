@@ -193,6 +193,28 @@ unsigned int get_expansion_id(void)
  */
 int misc_init_r(void)
 {
+	if (!omap_request_gpio(66) &&
+	    !omap_request_gpio(67) &&
+	    !omap_request_gpio(68) &&
+	    !omap_request_gpio(69)) {
+
+		/* turn on left red led */
+		omap_set_gpio_dataout(66, 0);
+		omap_set_gpio_direction(66, 0);
+
+		omap_set_gpio_dataout(67, 1);
+		omap_set_gpio_direction(67, 0);
+
+		/* turn on right green led */
+		omap_set_gpio_dataout(68, 1);
+		omap_set_gpio_direction(68, 0);
+
+		omap_set_gpio_dataout(69, 0);
+		omap_set_gpio_direction(69, 0);
+	} else {
+		printf("Couldn't acquire LED GPIOs\n");
+	}
+
 	twl4030_power_init();
 	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
 
