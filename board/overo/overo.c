@@ -266,6 +266,22 @@ unsigned int get_expansion_id(void)
  */
 int misc_init_r(void)
 {
+	if (!gpio_request(66, "") &&
+	    !gpio_request(67, "") &&
+	    !gpio_request(68, "") &&
+	    !gpio_request(69, "")) {
+
+		/* turn on left red led */
+		gpio_direction_output(66, 0);
+		gpio_direction_output(67, 1);
+
+		/* turn on right green led */
+		gpio_direction_output(68, 1);
+		gpio_direction_output(69, 0);
+	} else {
+		printf("Couldn't acquire LED GPIOs\n");
+	}
+
 	twl4030_power_init();
 	twl4030_led_init(TWL4030_LED_LEDEN_LEDAON | TWL4030_LED_LEDEN_LEDBON);
 
