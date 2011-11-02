@@ -128,8 +128,7 @@ static void do_io_settings(void)
 	if (!readl(&ctrl->control_efuse_1))
 		writel(CONTROL_EFUSE_1_OVERRIDE, &ctrl->control_efuse_1);
 
-	if (!readl(&ctrl->control_efuse_2))
-		writel(CONTROL_EFUSE_2_OVERRIDE, &ctrl->control_efuse_2);
+	writel(CONTROL_EFUSE_2_OVERRIDE, &ctrl->control_efuse_2);
 }
 #endif
 
