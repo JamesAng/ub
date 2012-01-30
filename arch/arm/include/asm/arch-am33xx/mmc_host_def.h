@@ -1,25 +1,16 @@
 /*
- * (C) Copyright 2010
- * Texas Instruments, <www.ti.com>
- * Syed Mohammed Khasim <khasim@ti.com>
+ * mmc_host_def.h
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation's version 2 of
- * the License.
+ * published by the Free Software Foundation version 2.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+ * kind, whether express or implied; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
  */
 
 #ifndef MMC_HOST_DEF_H
@@ -28,12 +19,11 @@
 /*
  * OMAP HSMMC register definitions
  */
+#define OMAP_HSMMC1_BASE		0x48060100
+#define OMAP_HSMMC2_BASE		0x481D8000
+#define OMAP_HSMMC3_BASE		0x47C24000
 
-#define OMAP_HSMMC1_BASE	0x4809C100
-#define OMAP_HSMMC2_BASE	0x480B4100
-#define OMAP_HSMMC3_BASE	0x480AD100
-
-struct hsmmc {
+typedef struct hsmmc {
 	unsigned char res1[0x10];
 	unsigned int sysconfig;		/* 0x10 */
 	unsigned int sysstatus;		/* 0x14 */
@@ -55,7 +45,7 @@ struct hsmmc {
 	unsigned int ie;		/* 0x134 */
 	unsigned char res4[0x8];
 	unsigned int capa;		/* 0x140 */
-};
+} hsmmc_t;
 
 /*
  * OMAP HS MMC Bit definitions
@@ -160,8 +150,8 @@ struct hsmmc {
 #define CLK_400KHZ			1
 #define CLK_MISC			2
 
-#define RSP_TYPE_NONE	(RSP_TYPE_NORSP   | CCCE_NOCHECK | CICE_NOCHECK)
-#define MMC_CMD0	(INDEX(0)  | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
+#define RSP_TYPE_NONE	(RSP_TYPE_NORSP | CCCE_NOCHECK | CICE_NOCHECK)
+#define MMC_CMD0	(INDEX(0) | RSP_TYPE_NONE | DP_NO_DATA | DDIR_WRITE)
 
 /* Clock Configurations and Macros */
 #define MMC_CLOCK_REFERENCE	96 /* MHz */
