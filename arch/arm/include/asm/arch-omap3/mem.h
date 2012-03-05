@@ -83,7 +83,7 @@ enum {
 #define ACTIM_CTRLA(a,b,c,d,e,f,g,h)		\
 		ACTIM_CTRLA_TRFC(a)	|	\
 		ACTIM_CTRLA_TRC(b)	|	\
-		ACTIM_CTRLA_TRAS(b)	|	\
+		ACTIM_CTRLA_TRAS(c)	|	\
 		ACTIM_CTRLA_TRP(d)	|	\
 		ACTIM_CTRLA_TRCD(e)	|	\
 		ACTIM_CTRLA_TRRD(f)	|	\
@@ -99,7 +99,7 @@ enum {
 #define ACTIM_CTRLB(a,b,c,d)			\
 		ACTIM_CTRLB_TWTR(a)	|	\
 		ACTIM_CTRLB_TCKE(b)	|	\
-		ACTIM_CTRLB_TXP(b)	|	\
+		ACTIM_CTRLB_TXP(c)	|	\
 		ACTIM_CTRLB_TXSR(d)
 
 /*
