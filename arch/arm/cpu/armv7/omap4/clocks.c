@@ -221,7 +221,10 @@ const struct dpll_params *get_mpu_dpll_params(void)
 const struct dpll_params *get_core_dpll_params(void)
 {
 	u32 sysclk_ind = get_sys_clk_index();
-
+#ifdef CONFIG_DUOVERO
+	/* temporary hack for first protos that must run @ 200Mhz */
+	return &core_dpll_params_es2_1600mhz_ddr200mhz[sysclk_ind];
+#endif
 	switch (omap_revision()) {
 	case OMAP4430_ES1_0:
 		return &core_dpll_params_es1_1524mhz[sysclk_ind];
