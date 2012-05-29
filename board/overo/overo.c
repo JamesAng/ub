@@ -385,6 +385,14 @@ static void setup_net_chip(void)
 	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5], 0x2C000000,
 			GPMC_SIZE_16M);
 
+	/* second lan chip */
+	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[4], 0x2B000000,
+			GPMC_SIZE_16M);
+
+	/* fpga chip */
+	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[1], 0x2A000000,
+			GPMC_SIZE_16M);
+
 	/* Enable off mode for NWE in PADCONF_GPMC_NWE register */
 	writew(readw(&ctrl_base ->gpmc_nwe) | 0x0E00, &ctrl_base->gpmc_nwe);
 	/* Enable off mode for NOE in PADCONF_GPMC_NADV_ALE register */
