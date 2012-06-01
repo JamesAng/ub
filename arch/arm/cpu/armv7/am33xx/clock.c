@@ -118,6 +118,11 @@ static void enable_per_clocks(void)
 	writel(PRCM_MOD_EN, &cmwkup->wkup_i2c0ctrl);
 	while (readl(&cmwkup->wkup_i2c0ctrl) != PRCM_MOD_EN)
 		;
+
+	/* i2c1 */
+	writel(PRCM_MOD_EN, &cmper->i2c1clkctrl);
+	while (readl(&cmper->i2c1clkctrl) != PRCM_MOD_EN)
+		;
 }
 
 static void mpu_pll_config(void)
