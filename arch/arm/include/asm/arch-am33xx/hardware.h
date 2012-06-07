@@ -78,4 +78,7 @@
 #define DDRPHY_0_CONFIG_BASE		(CTRL_BASE + 0x1400)
 #define DDRPHY_CONFIG_BASE		DDRPHY_0_CONFIG_BASE
 
+/* GPMC Base address */
+#define GPMC_BASE			0x50000000
+
 #endif /* __AM33XX_HARDWARE_H */
