@@ -255,7 +255,9 @@ int misc_init_r(void)
 	if (!gpio_request(66, "") &&
 	    !gpio_request(67, "") &&
 	    !gpio_request(68, "") &&
-	    !gpio_request(69, "")) {
+	    !gpio_request(69, "") &&
+	    !gpio_request(78, "") &&
+	    !gpio_request(79, "")) {
 
 		/* turn on left red led */
 		gpio_direction_output(66, 0);
@@ -264,6 +266,11 @@ int misc_init_r(void)
 		/* turn on right green led */
 		gpio_direction_output(68, 1);
 		gpio_direction_output(69, 0);
+
+		/* turn off both red and green on third led */
+		gpio_direction_output(78, 1);
+		gpio_direction_output(79, 1);
+
 	} else {
 		printf("Couldn't acquire LED GPIOs\n");
 	}
