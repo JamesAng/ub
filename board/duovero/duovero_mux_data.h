@@ -71,33 +71,33 @@ const struct pad_conf_entry core_padconf_array_non_essential[] = {
 	{GPMC_AD14, (PTU | IEN | M0)},				/* gpmc_ad14 */
 	{GPMC_AD15, (PTU | IEN | M0)},				/* gpmc_ad15 */
 	{GPMC_A16, (PTU | IEN | M3)},				/* gpio_40 */
-	{GPMC_A17, (PTU | IEN | M3)},				/* gpio_41 hdmi_ls_oe*/
+	{GPMC_A17, (PTU | IEN | M3)},				/* gpio_41 - hdmi_ls_oe */
 	{GPMC_A18, (PTU | IEN | M3)},				/* gpio_42 */
-	{GPMC_A19, (PTU | IEN | M3)},				/* gpio_43 - wifi_en*/
-	{GPMC_A20, (PTU | IEN | M3)},				/* gpio_44 */
-	{GPMC_A21, (PTU | IEN | M3)},				/* gpio_45 */
-	{GPMC_A22, (PTU | IEN | M3)},				/* gpio_46 - bt_en */
+	{GPMC_A19, (PTU | IEN | M3)},				/* gpio_43 - wifi_en */
+	{GPMC_A20, (PTU | IEN | M3)},				/* gpio_44 - eth_irq */
+	{GPMC_A21, (PTU | IEN | M3)},				/* gpio_45 - eth_nreset */
+	{GPMC_A22, (PTU | IEN | M3)},				/* gpio_46 - eth_pme */
 	{GPMC_A23, (PTU | IEN | M3)},				/* gpio_47 */
-	{GPMC_A24, (PTU | IEN | M3)},				/* gpio_48 */
+	{GPMC_A24, (PTU | IEN | M3)},				/* gpio_48 - eth_mdix */
 	{GPMC_A25, (PTU | IEN | M3)},				/* gpio_49 - bt_wakeup */
 	{GPMC_NCS0, (PTU | M0)},				/* gpmc_ncs0 */
 	{GPMC_NCS1, (PTU | M0)},				/* gpmc_ncs1 */
 	{GPMC_NCS2, (PTU | M0)},				/* gpmc_ncs2 */
-	{GPMC_NCS3, (PTU | IEN | M3)},				/* gpio_53 - wifi_irq */
+	{GPMC_NCS3, (PTU | IEN | M3)},				/* gpio_53  */
 	{C2C_DATA12, (PTU | M0)},				/* gpmc_ncs4 */
-	{C2C_DATA13, (PTU | M0)},				/* gpmc_ncs5 */
+	{C2C_DATA13, (PTU | M0)},				/* gpmc_ncs5 - eth_cs */
 	{GPMC_NWP, (PTU | IEN | M0)},				/* gpmc_nwp */
 	{GPMC_CLK, (PTU | IEN | M0)},				/* gpmc_clk */
 	{GPMC_NADV_ALE, (PTU | M0)},				/* gpmc_nadv_ale */
 	{GPMC_NBE0_CLE, (PTU | M0)},				/* gpmc_nbe0_cle */
 	{GPMC_NBE1, (PTU | M0)},				/* gpmc_nbe1 */
 	{GPMC_WAIT0, (PTU | IEN | M0)},				/* gpmc_wait0 */
-	{GPMC_WAIT1,  (PTU | IEN | M0)},			/* gpmc_wait1 */
+	{GPMC_WAIT1,  (PTU | IEN | M0)},			/* gpio_62 - usbh_nreset */
 	{GPMC_NOE, (PTU | M0)},					/* gpmc_noe */
 	{GPMC_NWE, (PTU | M0)},					/* gpmc_nwe */
-	{HDMI_HPD, (PTU | IEN | M3)},				/* gpio_63 - hdmi_hpd */
+	{HDMI_HPD, (PTD | IEN | M3)},				/* gpio_63 - hdmi_hpd */
 	{HDMI_CEC, (PTU | IEN | M0)},				/* hdmi_cec */
-	{HDMI_DDC_SCL, (PTU | IEN | M0)},			/* hdmi_ddc_scl */
+	{HDMI_DDC_SCL, (PTU | M0)},				/* hdmi_ddc_scl */
 	{HDMI_DDC_SDA, (PTU | IEN | M0)},			/* hdmi_ddc_sda */
 	{CSI21_DX0, (IEN | M0)},				/* csi21_dx0 */
 	{CSI21_DY0, (IEN | M0)},				/* csi21_dy0 */
