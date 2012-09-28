@@ -151,11 +151,13 @@
 	"console=ttyO2,115200n8\0" \
 	"fdt_high=0xffffffff\0" \
 	"usbtty=cdc_acm\0" \
+	"optargs=omapdss.debug=y\0" \
 	"vram=16M\0" \
 	"mmcdev=0\0" \
 	"mmcroot=/dev/mmcblk0p2 rw\0" \
 	"mmcrootfstype=ext3 rootwait\0" \
 	"mmcargs=setenv bootargs console=${console} " \
+		"${optargs} " \
 		"vram=${vram} " \
 		"root=${mmcroot} " \
 		"rootfstype=${mmcrootfstype}\0" \
