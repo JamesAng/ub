@@ -97,8 +97,8 @@ const struct pad_conf_entry core_padconf_array_non_essential[] = {
 	{GPMC_NWE, (PTU | M0)},					/* gpmc_nwe */
 	{HDMI_HPD, (PTD | IEN | M3)},				/* gpio_63 - hdmi_hpd */
 	{HDMI_CEC, (PTU | IEN | M0)},				/* hdmi_cec */
-	{HDMI_DDC_SCL, (PTU | M0)},				/* hdmi_ddc_scl */
-	{HDMI_DDC_SDA, (PTU | IEN | M0)},			/* hdmi_ddc_sda */
+	{HDMI_DDC_SCL, (M0)},					/* hdmi_ddc_scl */
+	{HDMI_DDC_SDA, (IEN | M0)},				/* hdmi_ddc_sda */
 	{CSI21_DX0, (IEN | M0)},				/* csi21_dx0 */
 	{CSI21_DY0, (IEN | M0)},				/* csi21_dy0 */
 	{CSI21_DX1, (IEN | M0)},				/* csi21_dx1 */
