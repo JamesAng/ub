@@ -33,7 +33,7 @@
 
 #include <configs/omap4_common.h>
 
-#define V_OSCK			26000000	/* Clock output from T2 */
+#define V_OSCK			38400000	/* Clock output from T2 */
 #define V_SCLK                   V_OSCK
 
 #define CONFIG_ENV_IS_NOWHERE
